@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       authors: {
-        type: Sequelize.ARRAY
+        type: Sequelize.ARRAY(Sequelize.STRING),
       },
       createdAt: {
         allowNull: false,
