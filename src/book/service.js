@@ -6,12 +6,14 @@ module.exports = {
     const result = await Book.findAll()
       .then(res => {
         return {
+          code: 200,
           data: res,
           message: 'Hooray.. successfully getting all your data',
         };
       })
       .catch(err => {
         throw new Error({
+          code: 500,
           message: 'Oops.. an error occurred while getting all data.',
           data: err,
         });
@@ -19,26 +21,40 @@ module.exports = {
 
     return result;
   },
-  create: async data => {
+  store: async data => {
     const result = await Book.create(data)
       .then(res => {
-        console.log(res, 'ini hasil');
-        return res;
+        return {
+          code: 201,
+          message: 'Hooray.. your book has been saved',
+          data: res,
+        };
       })
       .catch(err => {
-        throw new Error('Oops.. there was an error when saving your data', err);
+        throw new Error({
+          code: 500,
+          message: 'Oops.. there was an error when saving your data',
+          data: err,
+        });
       });
 
     return result;
   },
   show: async id => {
     const result = await Book.findByPk(id)
-      .then(res => res)
+      .then(res => {
+        return {
+          code: 200,
+          message: 'Horay.. your data has been founded',
+          data: res,
+        };
+      })
       .catch(err => {
-        throw new Error(
-          'Oops.. there was an error while getting your data. ',
-          err,
-        );
+        throw new Error({
+          code: 500,
+          message: 'Oops.. there was an error while getting your data. ',
+          data: err,
+        });
       });
 
     return result;
