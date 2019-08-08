@@ -5,51 +5,60 @@ module.exports = {
   findAll: async () => {
     return Book.findAll();
   },
-  create: async (data) => {
-    const result = await Book.create(data).then((res) => {
-      console.log("horay book has been created");
-    }).catch((err) => {
-      return err;
-    });
+  create: async data => {
+    const result = await Book.create(data)
+      .then(res => {
+        return res;
+      })
+      .catch(err => {
+        throw new Error('Oops.. there was an error when saving your data', err);
+      });
 
     return result;
   },
-  show: async (id) => {
-    try {
-      const result = await Book.findOne(id);
-    } catch (e) {
-      return e;
-    }
+  show: async id => {
+    const result = await Book.findByPk(id)
+      .then(res => res)
+      .catch(err => {
+        throw new Error(
+          'Oops.. there was an error while getting your data. ',
+          err,
+        );
+      });
 
     return result;
   },
   update: async (id, data) => {
-    const book = await Book.findOne(id);
-    if (book==null) return null;
+    const book = await Book.findByPk(id);
+    if (book === null) return null;
 
-    try {
-      const result = await Book.update({
-        title: data.title,
-        description: data.description,
-        published: data.published,
-        authors: data.authors
+    const result = await Book.update({
+      title: data.title,
+      description: data.description,
+      published: data.published,
+      authors: data.authors,
+    })
+      .then(res => res)
+      .catch(err => {
+        throw new Error(
+          `Oops.. there was an error while updating your daata ${book.title}.`,
+          err,
+        );
       });
-    } catch (e) {
-      throw e;
-    }
 
     return result;
   },
-  destroy: async (id) => {
-    const book = await Book.findOne(id);
-    if (book===null) return null;
-
-    try {
-      const result = await Book.destroy({ where : { id: id, }, });
-    } catch (e) {
-      throw e;
-    }
+  destroy: async id => {
+    const result = await book
+      .destroyByPk(id)
+      .then(res => res)
+      .catch(err => {
+        throw new Error(
+          `Oops.. there was an error while removing your data.`,
+          err,
+        );
+      });
 
     return result;
   },
-}
+};
