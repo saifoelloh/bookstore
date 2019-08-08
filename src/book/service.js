@@ -61,7 +61,12 @@ module.exports = {
   },
   update: async (id, data) => {
     const book = await Book.findByPk(id);
-    if (book === null) return null;
+    if (book === null)
+      return {
+        code: 404,
+        message: 'Oops.. your data not found',
+        data: null,
+      };
 
     const result = await Book.update({
       title: data.title,
@@ -69,25 +74,47 @@ module.exports = {
       published: data.published,
       authors: data.authors,
     })
-      .then(res => res)
+      .then(res => {
+        return {
+          code: 202,
+          message: 'Hooray.. successfully updating your data.',
+          data: res,
+        };
+      })
       .catch(err => {
-        throw new Error(
-          `Oops.. there was an error while updating your daata ${book.title}.`,
-          err,
-        );
+        throw new Error({
+          code: 500,
+          message: `Oops.. there was an error while updating your daata ${book.title}.`,
+          data: err,
+        });
       });
 
     return result;
   },
   destroy: async id => {
+    const book = await Book.findByPk(id);
+    if (book === null)
+      return {
+        code: 404,
+        message: 'Oops.. your data not found',
+        data: null,
+      };
+
     const result = await book
-      .destroyByPk(id)
-      .then(res => res)
+      .destroy()
+      .then(res => {
+        return {
+          code: 200,
+          message: 'Succesfully removing your data.',
+          data: res,
+        };
+      })
       .catch(err => {
-        throw new Error(
-          `Oops.. there was an error while removing your data.`,
-          err,
-        );
+        throw new Error({
+          code: 500,
+          message: `Oops.. there was an error while removing your data.`,
+          data: err,
+        });
       });
 
     return result;
