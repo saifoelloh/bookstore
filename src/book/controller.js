@@ -1,58 +1,70 @@
 const response = require('../../utils/responses');
+const service = require('./service');
 const db = require('../../models');
 const Book = db.Book;
 
 module.exports = {
   index: async (req, res) => {
-    const books = await Book.findAll().then((res) => {
-      console.log('Horay.. successfully getting all data');
-      return res;
-    }).catch((err) => {
+    try {
+      const { message, data } = await service.index();
+
+      return response.success(res, {
+        code: 200,
+        message,
+        data,
+      });
+    } catch (e) {
       return response.failed(res, {
         code: 500,
-        message: 'Oops.. something wrong when getting all data',
-        data: null,
+        message,
+        data,
       });
-    });
-
-    return response.success(res, {
-      code: 200,
-      message: 'Success get all data',
-      data: books,
-    });
+    }
   },
   create: async (req, res) => {
     const { data } = req.body;
-    const book = await Book.create(data).then((res) => {
-      console.log('Horay.. successfully creating new book');
-      return res;
-    }).catch((err) => {
-      return response.failed(res, {
-        code: 500,
-        message: 'Failed creating new book',
-        data: null,
-      }, 500);
-    });
+    const book = await Book.create(data)
+      .then(res => {
+        console.log('Horay.. successfully creating new book');
+        return res;
+      })
+      .catch(err => {
+        return response.failed(
+          res,
+          {
+            code: 500,
+            message: 'Failed creating new book',
+            data: null,
+          },
+          500,
+        );
+      });
 
-    return response.success(res, {
+    return response.success(
+      res,
+      {
         code: 201,
         message: 'Success creating book',
         data: book,
-    }, 201);
+      },
+      201,
+    );
   },
   show: async (req, res) => {
-    const book = await Book.findByPk(req.params.id).then((res) => {
-      console.log('Horay.. your data has been founded');
-      return res;
-    }).catch((err) => {
-      return response.failed(res, {
-        code: 500,
-        message: 'Internal server error',
-        data: e,
+    const book = await Book.findByPk(req.params.id)
+      .then(res => {
+        console.log('Horay.. your data has been founded');
+        return res;
+      })
+      .catch(err => {
+        return response.failed(res, {
+          code: 500,
+          message: 'Internal server error',
+          data: e,
+        });
       });
-    })
 
-    if (book===null) {
+    if (book === null) {
       return response.failed(res, {
         code: 404,
         message: 'Your data not found',
@@ -61,16 +73,16 @@ module.exports = {
     }
 
     return response.success(res, {
-        code: 200,
-        message: 'Success getting detail of the book',
-        data: book,
+      code: 200,
+      message: 'Success getting detail of the book',
+      data: book,
     });
   },
   update: async (req, res) => {
     const { data } = req.body;
 
     const book = await Book.findByPk(req.params.id);
-    if (book===null) {
+    if (book === null) {
       return response.failed(res, {
         code: 404,
         message: 'Data not found',
@@ -78,39 +90,46 @@ module.exports = {
       });
     }
 
-    const result = await book.update(data).then((res) => {
-      return res;
-    }).catch((err) => {
-      return response.failed(res, {
-        code: 500,
-        message: 'Internal server error',
-        data: null,
+    const result = await book
+      .update(data)
+      .then(res => {
+        return res;
+      })
+      .catch(err => {
+        return response.failed(res, {
+          code: 500,
+          message: 'Internal server error',
+          data: null,
+        });
       });
-    });
 
     return response.success(res, {
-        code: 200,
-        message: 'Succesfully updating your data',
-        data: result,
+      code: 200,
+      message: 'Succesfully updating your data',
+      data: result,
     });
   },
   destroy: async (req, res) => {
-    const result = await Book.destroy({where: {
-      id: req.params.id
-    }}).then((res) => {
-      return res;
-    }).catch((err) => {
-      return response.failed(res, {
-        code: 500,
-        message: 'Internal server error',
-        data: null,
+    const result = await Book.destroy({
+      where: {
+        id: req.params.id,
+      },
+    })
+      .then(res => {
+        return res;
+      })
+      .catch(err => {
+        return response.failed(res, {
+          code: 500,
+          message: 'Internal server error',
+          data: null,
+        });
       });
-    });
 
     return response.success(res, {
-        code: 200,
-        message: 'Your data has been deleted',
-        data: result,
+      code: 200,
+      message: 'Your data has been deleted',
+      data: result,
     });
   },
-}
+};
