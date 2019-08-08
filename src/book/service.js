@@ -2,12 +2,27 @@ const db = require('../../models');
 const Book = db.Book;
 
 module.exports = {
-  findAll: async () => {
-    return Book.findAll();
+  index: async () => {
+    const result = await Book.findAll()
+      .then(res => {
+        return {
+          data: res,
+          message: 'Hooray.. successfully getting all your data',
+        };
+      })
+      .catch(err => {
+        throw new Error({
+          message: 'Oops.. an error occurred while getting all data.',
+          data: err,
+        });
+      });
+
+    return result;
   },
   create: async data => {
     const result = await Book.create(data)
       .then(res => {
+        console.log(res, 'ini hasil');
         return res;
       })
       .catch(err => {
